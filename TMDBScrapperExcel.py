@@ -213,7 +213,7 @@ def update_excel_with_movie_details(excel_file_path, sheet_name):
         wb.close()
 
 # Example usage
-excel_file_path = "C:/Users/rchrd/Documents/Richard/My Movie Library.xlsx"
+excel_file_path = "F:/Richard/My Movie Library.xlsx"
 sheet_name = 'Sheet1'
 update_excel_with_movie_details(excel_file_path, sheet_name)
 
