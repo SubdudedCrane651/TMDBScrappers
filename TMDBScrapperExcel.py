@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import openpyxl
 import xlwings as xw
-import time
+import time,os
 
 def get_movie_details_tmdb(title):
     search_url = f"https://www.themoviedb.org/search?query={title.replace(' ', '%20')}"
@@ -111,10 +111,7 @@ def update_excel_with_movie_details(excel_file_path, sheet_name):
         
     if DoEntry:
     # Save the updated Excel file
-        if not os.path.isabs(excel_file_path):
-            excel_file_path=os.path.join(os.path.expanduser("~"), "Documents")+"\\"+excel_file_path
-        workbook.save(excel_file_path)
-
+        
         # Use xlwings to add the VBA macro
         wb = xw.Book(excel_file_path)
         vba_code = r'''
@@ -218,6 +215,8 @@ def update_excel_with_movie_details(excel_file_path, sheet_name):
 # Example usage
 #excel_file_path = "My Movie Library.xlsx"
 excel_file_path = "F:/Richard/My Movie Library.xlsx"
+if not os.path.isabs(excel_file_path):
+   excel_file_path=os.path.join(os.path.expanduser("~"), "Documents")+"\\"+excel_file_path
 sheet_name = 'Sheet1'
 update_excel_with_movie_details(excel_file_path, sheet_name)
 
