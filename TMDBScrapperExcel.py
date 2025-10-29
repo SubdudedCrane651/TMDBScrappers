@@ -213,8 +213,8 @@ def update_excel_with_movie_details(excel_file_path, sheet_name):
         wb.close()
 
 # Example usage
-#excel_file_path = "My Movie Library.xlsx"
-excel_file_path = "F:/Richard/My Movie Library.xlsx"
+excel_file_path = "My Movie Library.xlsx"
+#excel_file_path = "F:/Richard/My Movie Library.xlsx"
 if not os.path.isabs(excel_file_path):
    excel_file_path=os.path.join(os.path.expanduser("~"), "Documents")+"\\"+excel_file_path
 sheet_name = 'Sheet1'

@@ -1,1 +1,13 @@
 A Python program to scrap my DVD films directory from the TMDB database online and create and interact with my Excel file.
+
+Hello User,
+
+This is a Movie database creator for excel program. When install your can modify the "My Movie Library.xlsx" file in your Computers Documents folder where when running the program it will fetch that there. Also to get the images to appear and view the contents you must open "My Movie Library.xlsm" they are two different files. The later is an Excel Macro file. Once open the later after running TMDBScapperExcel.exe you can run the AddButtons Macro and then 
+
+' In the Tools References dialog in Developer mode,
+' scroll down and check the box for
+' Microsoft Visual Basic for Applications Extensibility 5.3
+' & Microsoft Forms 2.0 Object Library by inserting a form
+
+Enjoy and comment me,
+Richard
