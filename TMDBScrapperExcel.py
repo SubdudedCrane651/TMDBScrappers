@@ -207,7 +207,25 @@ def update_excel_with_movie_details(excel_file_path, sheet_name):
                 DownloadImage = ""
             End If
         End Function
-            '''
+        
+        Sub ShowInfoPopup()
+             MsgBox "In the Tools References dialog in Developer mode, scroll down and check the box for Microsoft Visual Basic for Applications Extensibility 5.3 & Microsoft Forms 2.0 Object Library by inserting a form", vbInformation, "Info"
+        End Sub
+        '''
+
+        import xlsxwriter
+
+        workbook = xlsxwriter.Workbook(excel_file_path.replace('.xlsx', '.xlsm'))
+        worksheet = workbook.add_worksheet()
+
+        worksheet.insert_button('B3', {
+            'macro': 'ShowInfoPopup',
+            'caption': 'Info',
+            'width': 50,
+            'height': 20
+        })
+
+        workbook.close()
             
         wb.api.VBProject.VBComponents.Add(1).CodeModule.AddFromString(vba_code)
         wb.save(excel_file_path.replace('.xlsx', '.xlsm'))
