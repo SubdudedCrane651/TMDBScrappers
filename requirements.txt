@@ -1,4 +1,3 @@
-xlsxwriter
 openpyxl
 xlwings
 requests

@@ -67,10 +67,10 @@ def get_movie_details_tmdb(title):
 def update_excel_with_movie_details(excel_file_path, sheet_name):
     workbook = openpyxl.load_workbook(excel_file_path)
     sheet = workbook[sheet_name]
-    count=2
+    count = 4
     DoEntry=False
     # Iterate over each row in column A
-    for row in sheet.iter_rows(min_row=2, min_col=1, max_col=1):
+    for row in sheet.iter_rows(min_row=4, min_col=1, max_col=1):
         cell = row[0]
         movie_title = cell.value
         ColumnB=sheet["B"+str(count)].value
@@ -107,7 +107,7 @@ def update_excel_with_movie_details(excel_file_path, sheet_name):
                         print(f" - {member['actor_name']} / {member['character']}")
                     workbook.save(excel_file_path)                        
         else:
-            print("Skiped Movie "+str(count-1))                        
+            print("Skiped Movie "+str(count-3))                        
         count=count+1
         
     if DoEntry:
@@ -124,7 +124,7 @@ def update_excel_with_movie_details(excel_file_path, sheet_name):
 
                 Dim btn As Button
                 Dim i As Long
-                For i = 2 To lastRow
+                For i = 4 To lastRow
                     Set btn = ws.Buttons.Add(ws.Cells(i, 10).Left, ws.Cells(i, 9).Top, 100, 20)
                     btn.Name = "btnShowImage" & i
                     btn.OnAction = "ShowImage"
@@ -213,26 +213,26 @@ def update_excel_with_movie_details(excel_file_path, sheet_name):
         End Sub
         '''
 
-        import xlsxwriter
-
-        workbook = xlsxwriter.Workbook(excel_file_path.replace('.xlsx', '.xlsm'))
-        worksheet = workbook.add_worksheet()
-
-        worksheet.insert_button('B3', {
-            'macro': 'ShowInfoPopup',
-            'caption': 'Info',
-            'width': 50,
-            'height': 20
-        })
-
-        workbook.close()
-            
         wb.api.VBProject.VBComponents.Add(1).CodeModule.AddFromString(vba_code)
+        
+        ws = wb.sheets['Sheet1']
+        btn = ws.api.Buttons().Add(0, 0, 50, 20)  # Left, Top, Width, Height
+        btn.Name = "btnInfo"
+        btn.OnAction = "ShowInfoPopup"
+        btn.Caption = "Info"
+
+        btn2= ws.api.Buttons().Add(75, 0, 100, 20)  # Left, Top, Width, Height
+        btn2.Name = "btnAddButtons"
+        btn2.OnAction = "AddButtons"
+        btn2.Caption = "Add Buttons"
+
+        # Save as .xlsm
+        
         wb.save(excel_file_path.replace('.xlsx', '.xlsm'))
         wb.close()
-
+        
 # Example usage
-#excel_file_path = "My Movie Library.xlsx"
+# excel_file_path = "My Movie Library.xlsx"
 excel_file_path = "F:/Richard/My Movie Library.xlsx"
 if not os.path.isabs(excel_file_path):
    excel_file_path=os.path.join(os.path.expanduser("~"), "Documents")+"\\"+excel_file_path
