@@ -2,23 +2,23 @@ Sub ShowImageAndInfo()
     ' Make sure Tools > References includes:
     ' - Microsoft Visual Basic for Applications Extensibility 5.3
     ' - Microsoft Forms 2.0 Object Library
-    
+
     Dim btnName As String
     btnName = Application.Caller
-    
+
     Dim ws As Worksheet
     Set ws = ThisWorkbook.Sheets("Sheet1")
-    
+
     Dim rowIndex As Long
     rowIndex = ws.Shapes(btnName).TopLeftCell.Row
-    
+
     Dim imageURL As String
     imageURL = ws.Cells(rowIndex, 9).Value
-    
+
     If imageURL <> "N/A" Then
         Dim localFilePath As String
         localFilePath = DownloadImage(imageURL)
-        
+
         If localFilePath <> "" Then
             ' Create the UserForm dynamically
             Dim VBComp As VBComponent
@@ -28,7 +28,7 @@ Sub ShowImageAndInfo()
                 .Properties("Height") = 600
                 .Properties("Caption") = ws.Cells(rowIndex, 2).Value
             End With
-            
+
             ' Add Image control
             Dim ImgControl As MSForms.Image
             Set ImgControl = VBComp.Designer.Controls.Add("Forms.Image.1")
@@ -39,7 +39,7 @@ Sub ShowImageAndInfo()
                 .Height = 300
                 .Picture = LoadPicture(localFilePath)
             End With
-            
+
             ' Add Labels for Description, Director, Writer, Cast
             Dim txtDesc As MSForms.TextBox
             Set txtDesc = VBComp.Designer.Controls.Add("Forms.TextBox.1")
@@ -55,7 +55,7 @@ Sub ShowImageAndInfo()
                 .Locked = True ' makes it read-only
                 .BackColor = RGB(240, 240, 240) ' optional styling
             End With
-            
+
             Dim lblDirector As MSForms.Label
             Set lblDirector = VBComp.Designer.Controls.Add("Forms.Label.1")
             With lblDirector
@@ -64,7 +64,7 @@ Sub ShowImageAndInfo()
                 .Top = 370
                 .Width = 380
             End With
-            
+
             Dim lblWriter As MSForms.Label
             Set lblWriter = VBComp.Designer.Controls.Add("Forms.Label.1")
             With lblWriter
@@ -73,7 +73,7 @@ Sub ShowImageAndInfo()
                 .Top = 420
                 .Width = 380
             End With
-            
+
             Dim txtCast As MSForms.TextBox
             Set txtCast = VBComp.Designer.Controls.Add("Forms.TextBox.1")
             With txtCast
@@ -88,7 +88,7 @@ Sub ShowImageAndInfo()
                 .Locked = True ' makes it read-only
                 .BackColor = RGB(240, 240, 240) ' optional styling
             End With
-            
+
             Dim btnLink As MSForms.CommandButton
             Set btnLink = VBComp.Designer.Controls.Add("Forms.CommandButton.1")
             With btnLink
@@ -98,6 +98,12 @@ Sub ShowImageAndInfo()
                 .Width = 100
                 .Height = 30
                 .Tag = ws.Cells(rowIndex, 7).Value ' store the link in Tag property
+
+                ' Styling polish
+                .BackColor = RGB(0, 102, 204) ' deep blue background
+                .ForeColor = RGB(255, 255, 255) ' white text
+                .Font.Bold = True
+                .Font.Size = 10
             End With
             
             ' Add click handler dynamically
@@ -116,7 +122,7 @@ Sub ShowImageAndInfo()
                 "        MsgBox ""No link available."", vbExclamation" & vbCrLf & _
                 "    End If" & vbCrLf & _
                 "End Sub"
-            
+
             ' Show the form and clean up afterwards
             With VBA.UserForms.Add(VBComp.Name)
                 .Show
