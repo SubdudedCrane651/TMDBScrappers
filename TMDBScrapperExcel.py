@@ -500,9 +500,20 @@ def load_saved_excel_path():
     return None
 
 def save_excel_path(path):
-    data = {"excel_file_path": path}
+    # Load existing config if it exists
+    try:
+        with open(config_path, "r") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        data = {"api_key": "TMDB_API_KEY"}  # Start fresh if no config exists
+
+    # Update only the excel path
+    data["excel_file_path"] = path
+
+    # Save back without touching other keys
     with open(config_path, "w") as f:
-        json.dump(data, f, indent=4)        
+        json.dump(data, f, indent=4)
+    
 
 excel_file_path = load_saved_excel_path()
 API_KEY = get_api_key()
