@@ -1,0 +1,14 @@
+
+Hello User,
+
+This is a Movie database creator for an excel program. When run for the first time it will ask if not already existing the full path of the "My Movie Library.xlsx" where when running the program it will fetch that there and create a modified .xlsm excel macro file. Once open the "My Movie Library.xlsm" run the AddButtons Macro and then 
+
+' In the Tools References dialog in Developer mode,
+' scroll down and check the box for
+' Microsoft Visual Basic for Applications Extensibility 5.3
+' & Microsoft Forms 2.0 Object Library by inserting a form
+
+N.B Not all titles will match. To do this add a year when made such as The Sound Of Music y:1965 where just the title find something else but with the y: it finds it properly. You can also add a Director such as Vertigo: y:1958 d:Alfred Hitchcocks for example.
+
+Enjoy and comment me,
+Richard
