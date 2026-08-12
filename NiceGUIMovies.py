@@ -6,16 +6,22 @@ ui.label("Movie HTML Creator").classes("text-2xl mb-4")
 
 movies = []
 
-def load_csv(e):
+async def load_csv(e):
     global movies
-    file = e.file
-    content = file.read().decode('utf-8')
+
+    # SmallFileUpload object
+    uploaded = e.file
+
+    # MUST await read()
+    content = await uploaded.read()
+    content = content.decode('utf-8')
 
     df = pd.read_csv(io.StringIO(content))
     movies = df.to_dict(orient='records')
 
     ui.notify(f"Loaded {len(movies)} movies")
     show_movie_grid()
+
 
 def show_movie_grid():
     grid.clear()
