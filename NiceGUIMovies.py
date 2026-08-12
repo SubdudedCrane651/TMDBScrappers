@@ -143,7 +143,6 @@ def save_html_file():
                 color: #000;
                 transition: background 0.3s, color 0.3s;
             }
-
             body.dark {
                 background: #1e1e1e;
                 color: #e0e0e0;
@@ -156,7 +155,6 @@ def save_html_file():
                 color: white;
                 transition: background 0.3s, color 0.3s;
             }
-
             body.dark header, body.dark footer {
                 background: #000;
                 color: #fff;
@@ -175,7 +173,6 @@ def save_html_file():
                 font-size: 14px;
                 transition: background 0.3s;
             }
-
             body.dark .toggle-btn {
                 background: #555;
             }
@@ -189,6 +186,20 @@ def save_html_file():
                 border: 1px solid #aaa;
             }
 
+            .sort-box { text-align:center; margin-bottom:20px; }
+            .sort-box button {
+                padding: 8px 12px;
+                margin: 5px;
+                border-radius: 6px;
+                border: none;
+                background: #444;
+                color: white;
+                cursor: pointer;
+            }
+            body.dark .sort-box button {
+                background: #666;
+            }
+
             .grid { display: flex; flex-wrap: wrap; gap: 20px; }
 
             .movie {
@@ -200,7 +211,6 @@ def save_html_file():
                 position: relative;
                 transition: background 0.3s;
             }
-
             body.dark .movie {
                 background: #2c2c2c;
             }
@@ -220,6 +230,26 @@ def save_html_file():
                 position: relative;
             }
 
+            /* Genre tags */
+            .genres {
+                text-align: center;
+                margin-top: 6px;
+            }
+            .genre-tag {
+                display: inline-block;
+                padding: 3px 6px;
+                margin: 2px;
+                font-size: 11px;
+                border-radius: 6px;
+                background: #ddd;
+                color: #000;
+            }
+            body.dark .genre-tag {
+                background: #444;
+                color: #eee;
+            }
+
+            /* Cast preview */
             .cast-preview {
                 display: none;
                 position: absolute;
@@ -235,16 +265,15 @@ def save_html_file():
                 font-size: 12px;
                 transition: background 0.3s, color 0.3s;
             }
-
             body.dark .cast-preview {
                 background: #333;
                 color: #eee;
             }
-
             .title:hover .cast-preview {
                 display: block;
             }
 
+            /* Popup */
             .popup-bg {
                 display: none;
                 position: fixed;
@@ -255,7 +284,6 @@ def save_html_file():
                 align-items: center;
                 z-index: 1000;
             }
-
             .popup {
                 background: white;
                 padding: 20px;
@@ -263,12 +291,10 @@ def save_html_file():
                 border-radius: 10px;
                 transition: background 0.3s, color 0.3s;
             }
-
             body.dark .popup {
                 background: #2c2c2c;
                 color: #eee;
             }
-
             .close-btn {
                 margin-top: 10px;
                 padding: 8px 12px;
@@ -278,7 +304,6 @@ def save_html_file():
                 cursor: pointer;
                 border-radius: 5px;
             }
-
             body.dark .close-btn {
                 background: #555;
             }
@@ -305,6 +330,21 @@ def save_html_file():
             function toggleDarkMode() {
                 document.body.classList.toggle('dark');
             }
+
+            function sortMovies(type) {
+                let grid = document.querySelector('.grid');
+                let movies = Array.from(document.getElementsByClassName('movie'));
+
+                movies.sort((a, b) => {
+                    let A = a.getAttribute('data-sort-' + type);
+                    let B = b.getAttribute('data-sort-' + type);
+
+                    if (type === 'title') return A.localeCompare(B);
+                    if (type === 'year' || type === 'rating') return Number(B) - Number(A);
+                });
+
+                movies.forEach(m => grid.appendChild(m));
+            }
         </script>
     </head>
 
@@ -318,6 +358,12 @@ def save_html_file():
                    onkeyup="searchMovies()">
         </div>
 
+        <div class="sort-box">
+            <button onclick="sortMovies('title')">Sort by Title</button>
+            <button onclick="sortMovies('year')">Sort by Year</button>
+            <button onclick="sortMovies('rating')">Sort by Rating</button>
+        </div>
+
         <div class="grid">
     """
 
@@ -326,13 +372,25 @@ def save_html_file():
 
         searchable = (
             f"{movie['Title']} {movie['Year']} {movie['Rating']} {movie['Description']} "
-            f"{movie['Director']} {movie['Writer']} {movie['Cast']}"
+            f"{movie['Director']} {movie['Writer']} {movie['Cast']} {movie.get('Genre', '')}"
         ).lower()
 
-        cast_preview = "<br>".join(movie['Cast'].split(";")[:5])
+        cast_preview = "<br>".join(str(movie['Cast']).split(";")[:5])
+
+        genre_value = str(movie.get('Genre', '') or '')
+        genres_html = "".join(
+            f"<span class='genre-tag'>{g.strip()}</span>"
+            for g in genre_value.split(";") if g.strip()
+        )
 
         html += f"""
-        <div class="movie" data-search="{searchable}" onclick="openPopup('{popup_id}')">
+        <div class="movie"
+             data-search="{searchable}"
+             data-sort-title="{movie['Title']}"
+             data-sort-year="{movie['Year']}"
+             data-sort-rating="{movie['Rating']}"
+             onclick="openPopup('{popup_id}')">
+
             <img src="{movie['Image URL']}">
 
             <div class="title">
@@ -342,6 +400,8 @@ def save_html_file():
                     {cast_preview}
                 </div>
             </div>
+
+            <div class="genres">{genres_html}</div>
         </div>
 
         <div id="{popup_id}" class="popup-bg">
@@ -350,6 +410,7 @@ def save_html_file():
                 <ul>
                     <li><b>Year:</b> {movie['Year']}</li>
                     <li><b>Rating:</b> {movie['Rating']}</li>
+                    <li><b>Genre:</b> {movie.get('Genre', '')}</li>
                     <li><b>Director:</b> {movie['Director']}</li>
                     <li><b>Writer:</b> {movie['Writer']}</li>
                     <li><b>Description:</b> {movie['Description']}</li>
@@ -372,7 +433,6 @@ def save_html_file():
         f.write(html)
 
     ui.notify("Saved as movie_gallery.html")
-
 
 def generate_html():
     html_output.clear()
