@@ -138,12 +138,63 @@ def save_html_file():
         <style>
             body { font-family: Arial; padding: 20px; background: #f5f5f5; }
             header, footer { text-align: center; padding: 10px; background: #222; color: white; }
-            .search-box { text-align: center; margin-bottom: 20px; }
-            .grid { display: flex; flex-wrap: wrap; gap: 20px; }
-            .movie { width: 180px; background: white; padding: 10px; border-radius: 10px; cursor: pointer; }
-            .movie img { width: 100%; height: 250px; object-fit: cover; border-radius: 8px; }
-            .title { text-align: center; margin-top: 8px; font-size: 14px; }
 
+            .search-box { text-align: center; margin-bottom: 20px; }
+            .search-box input {
+                width: 300px;
+                padding: 8px;
+                font-size: 14px;
+                border-radius: 6px;
+                border: 1px solid #aaa;
+            }
+
+            .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+
+            .movie {
+                width: 180px;
+                background: white;
+                padding: 10px;
+                border-radius: 10px;
+                cursor: pointer;
+                position: relative;
+            }
+
+            .movie img {
+                width: 100%;
+                height: 250px;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+
+            .title {
+                text-align: center;
+                margin-top: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                position: relative;
+            }
+
+            /* Cast preview hover box (now on title hover) */
+            .cast-preview {
+                display: none;
+                position: absolute;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: white;
+                padding: 10px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.3);
+                width: 160px;
+                z-index: 999;
+                font-size: 12px;
+            }
+
+            .title:hover .cast-preview {
+                display: block;
+            }
+
+            /* Popup styling */
             .popup-bg {
                 display: none;
                 position: fixed;
@@ -152,13 +203,16 @@ def save_html_file():
                 background: rgba(0,0,0,0.6);
                 justify-content: center;
                 align-items: center;
+                z-index: 1000;
             }
+
             .popup {
                 background: white;
                 padding: 20px;
                 width: 400px;
                 border-radius: 10px;
             }
+
             .close-btn {
                 margin-top: 10px;
                 padding: 8px 12px;
@@ -184,11 +238,7 @@ def save_html_file():
 
                 for (let item of items) {
                     let text = item.getAttribute('data-search');
-                    if (text.includes(q)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
+                    item.style.display = text.includes(q) ? 'block' : 'none';
                 }
             }
         </script>
@@ -198,8 +248,8 @@ def save_html_file():
         <header><h1>Movie Gallery</h1></header>
 
         <div class="search-box">
-            <input id="search" type="text" placeholder="Search movies..." 
-                   onkeyup="searchMovies()" style="width:300px; padding:8px;">
+            <input id="search" type="text" placeholder="Search movies..."
+                   onkeyup="searchMovies()">
         </div>
 
         <div class="grid">
@@ -208,16 +258,24 @@ def save_html_file():
     for i, movie in enumerate(movies):
         popup_id = f"popup_{i}"
 
-        # Build searchable text
         searchable = (
             f"{movie['Title']} {movie['Year']} {movie['Description']} "
             f"{movie['Director']} {movie['Writer']} {movie['Cast']}"
         ).lower()
 
+        cast_preview = "<br>".join(movie['Cast'].split(";")[:5])
+
         html += f"""
         <div class="movie" data-search="{searchable}" onclick="openPopup('{popup_id}')">
             <img src="{movie['Image URL']}">
-            <div class="title">{movie['Title']}</div>
+
+            <div class="title">
+                {movie['Title']}
+                <div class="cast-preview">
+                    <b>Cast:</b><br>
+                    {cast_preview}
+                </div>
+            </div>
         </div>
 
         <div id="{popup_id}" class="popup-bg">
@@ -248,7 +306,6 @@ def save_html_file():
         f.write(html)
 
     ui.notify("Saved as movie_gallery.html")
-
 
 def generate_html():
     html_output.clear()
