@@ -174,7 +174,6 @@ def save_html_file():
                 position: relative;
             }
 
-            /* Cast preview hover box (now on title hover) */
             .cast-preview {
                 display: none;
                 position: absolute;
@@ -194,7 +193,6 @@ def save_html_file():
                 display: block;
             }
 
-            /* Popup styling */
             .popup-bg {
                 display: none;
                 position: fixed;
@@ -259,7 +257,7 @@ def save_html_file():
         popup_id = f"popup_{i}"
 
         searchable = (
-            f"{movie['Title']} {movie['Year']} {movie['Description']} "
+            f"{movie['Title']} {movie['Year']} {movie['Rating']} {movie['Description']} "
             f"{movie['Director']} {movie['Writer']} {movie['Cast']}"
         ).lower()
 
