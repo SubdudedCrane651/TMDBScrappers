@@ -136,8 +136,49 @@ def save_html_file():
     <head>
         <title>Movie Gallery</title>
         <style>
-            body { font-family: Arial; padding: 20px; background: #f5f5f5; }
-            header, footer { text-align: center; padding: 10px; background: #222; color: white; }
+            body {
+                font-family: Arial;
+                padding: 20px;
+                background: #f5f5f5;
+                color: #000;
+                transition: background 0.3s, color 0.3s;
+            }
+
+            body.dark {
+                background: #1e1e1e;
+                color: #e0e0e0;
+            }
+
+            header, footer {
+                text-align: center;
+                padding: 10px;
+                background: #222;
+                color: white;
+                transition: background 0.3s, color 0.3s;
+            }
+
+            body.dark header, body.dark footer {
+                background: #000;
+                color: #fff;
+            }
+
+            .toggle-btn {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 10px 15px;
+                background: #222;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background 0.3s;
+            }
+
+            body.dark .toggle-btn {
+                background: #555;
+            }
 
             .search-box { text-align: center; margin-bottom: 20px; }
             .search-box input {
@@ -157,6 +198,11 @@ def save_html_file():
                 border-radius: 10px;
                 cursor: pointer;
                 position: relative;
+                transition: background 0.3s;
+            }
+
+            body.dark .movie {
+                background: #2c2c2c;
             }
 
             .movie img {
@@ -187,6 +233,12 @@ def save_html_file():
                 width: 160px;
                 z-index: 999;
                 font-size: 12px;
+                transition: background 0.3s, color 0.3s;
+            }
+
+            body.dark .cast-preview {
+                background: #333;
+                color: #eee;
             }
 
             .title:hover .cast-preview {
@@ -209,6 +261,12 @@ def save_html_file():
                 padding: 20px;
                 width: 400px;
                 border-radius: 10px;
+                transition: background 0.3s, color 0.3s;
+            }
+
+            body.dark .popup {
+                background: #2c2c2c;
+                color: #eee;
             }
 
             .close-btn {
@@ -219,6 +277,10 @@ def save_html_file():
                 border: none;
                 cursor: pointer;
                 border-radius: 5px;
+            }
+
+            body.dark .close-btn {
+                background: #555;
             }
         </style>
 
@@ -239,10 +301,16 @@ def save_html_file():
                     item.style.display = text.includes(q) ? 'block' : 'none';
                 }
             }
+
+            function toggleDarkMode() {
+                document.body.classList.toggle('dark');
+            }
         </script>
     </head>
 
     <body>
+        <button class="toggle-btn" onclick="toggleDarkMode()">Dark Mode</button>
+
         <header><h1>Movie Gallery</h1></header>
 
         <div class="search-box">
@@ -304,6 +372,7 @@ def save_html_file():
         f.write(html)
 
     ui.notify("Saved as movie_gallery.html")
+
 
 def generate_html():
     html_output.clear()
