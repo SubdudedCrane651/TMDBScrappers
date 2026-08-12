@@ -4,6 +4,9 @@ import io
 
 ui.label("Movie HTML Creator").classes("text-2xl mb-4")
 
+search_input = ui.input("Search (year, description, director, writer, cast)").classes("w-96")
+ui.button("Search", on_click=lambda: run_search(search_input.value))
+
 movies = []
 
 async def load_csv(e):
@@ -21,7 +24,73 @@ async def load_csv(e):
 
     ui.notify(f"Loaded {len(movies)} movies")
     show_movie_grid()
+    
+def run_search(query):
+    if not query:
+        ui.notify("Enter a search term")
+        return
 
+    query = str(query).lower()
+    results = []
+
+    for movie in movies:
+        # Convert all fields to strings safely
+        year = str(movie.get('Year', '')).lower()
+        desc = str(movie.get('Description', '')).lower()
+        director = str(movie.get('Director', '')).lower()
+        writer = str(movie.get('Writer', '')).lower()
+        cast = str(movie.get('Cast', '')).lower()
+
+        # Search in multiple fields
+        if (query in year or
+            query in desc or
+            query in director or
+            query in writer or
+            query in cast):
+            results.append(movie)
+
+    if not results:
+        ui.notify("No results found")
+        return
+
+    save_search_results(results, query)
+    
+def save_search_results(results, query):
+    html = f"""
+    <html>
+    <head>
+        <title>Search Results for {query}</title>
+        <style>
+            body {{ font-family: Arial; padding: 20px; }}
+            header {{ text-align: center; }}
+            .movie {{ margin-bottom: 30px; padding: 15px; border-bottom: 1px solid #ccc; }}
+            a {{ color: blue; }}
+        </style>
+    </head>
+    <body>
+        <header><h1>Search Results for "{query}"</h1></header>
+    """
+
+    for movie in results:
+        html += f"""
+        <div class="movie">
+            <h2>{movie['Title']} ({movie['Year']})</h2>
+            <p><b>Director:</b> {movie['Director']}</p>
+            <p><b>Writer:</b> {movie['Writer']}</p>
+            <p><b>Description:</b> {movie['Description']}</p>
+            <p><b>Cast:</b> {movie['Cast']}</p>
+            <p><b>Link:</b> <a href="#" onclick="window.open('{movie['Link']}', '_blank')">Open TMDB</a></p>
+        </div>
+        """
+
+    html += "</body></html>"
+
+    filename = f"search_results_{query.replace(' ', '_')}.html"
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    ui.notify(f"Search results saved as {filename}")
+    
 
 def show_movie_grid():
     grid.clear()
@@ -69,12 +138,12 @@ def save_html_file():
         <style>
             body { font-family: Arial; padding: 20px; background: #f5f5f5; }
             header, footer { text-align: center; padding: 10px; background: #222; color: white; }
+            .search-box { text-align: center; margin-bottom: 20px; }
             .grid { display: flex; flex-wrap: wrap; gap: 20px; }
             .movie { width: 180px; background: white; padding: 10px; border-radius: 10px; cursor: pointer; }
             .movie img { width: 100%; height: 250px; object-fit: cover; border-radius: 8px; }
             .title { text-align: center; margin-top: 8px; font-size: 14px; }
 
-            /* Popup styling */
             .popup-bg {
                 display: none;
                 position: fixed;
@@ -108,20 +177,45 @@ def save_html_file():
             function closePopup(id) {
                 document.getElementById(id).style.display = 'none';
             }
+
+            function searchMovies() {
+                let q = document.getElementById('search').value.toLowerCase();
+                let items = document.getElementsByClassName('movie');
+
+                for (let item of items) {
+                    let text = item.getAttribute('data-search');
+                    if (text.includes(q)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                }
+            }
         </script>
     </head>
 
     <body>
         <header><h1>Movie Gallery</h1></header>
+
+        <div class="search-box">
+            <input id="search" type="text" placeholder="Search movies..." 
+                   onkeyup="searchMovies()" style="width:300px; padding:8px;">
+        </div>
+
         <div class="grid">
     """
 
-    # Build movie grid + popups
     for i, movie in enumerate(movies):
         popup_id = f"popup_{i}"
 
+        # Build searchable text
+        searchable = (
+            f"{movie['Title']} {movie['Year']} {movie['Description']} "
+            f"{movie['Director']} {movie['Writer']} {movie['Cast']}"
+        ).lower()
+
         html += f"""
-        <div class="movie" onclick="openPopup('{popup_id}')">
+        <div class="movie" data-search="{searchable}" onclick="openPopup('{popup_id}')">
             <img src="{movie['Image URL']}">
             <div class="title">{movie['Title']}</div>
         </div>
@@ -136,7 +230,7 @@ def save_html_file():
                     <li><b>Writer:</b> {movie['Writer']}</li>
                     <li><b>Description:</b> {movie['Description']}</li>
                     <li><b>Cast:</b> {movie['Cast']}</li>
-                    <li><b>Link:</b> <a href="{movie['Link']}" target="_blank">Open TMDB</a></li>
+                    <li><b>Link:</b> <a href="#" onclick="window.open('{movie['Link']}', '_blank')">Open TMDB</a></li>
                 </ul>
                 <button class="close-btn" onclick="closePopup('{popup_id}')">Close</button>
             </div>
@@ -154,7 +248,7 @@ def save_html_file():
         f.write(html)
 
     ui.notify("Saved as movie_gallery.html")
-    
+
 
 def generate_html():
     html_output.clear()
